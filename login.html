@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        function validateLogin(event) {
+            event.preventDefault();  
+
+            
+            const studentId = document.getElementById('studentId').value;
+            const password = document.getElementById('password').value;
+
+           
+            if (studentId === "admin" && password === "1234") {
+                window.location.href = "dashboard.html";  
+            } else {
+                alert("Invalid Student ID or Password. Please try again.");  
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Library Login</h2>
+        <form onsubmit="validateLogin(event)">
+            <label for="studentId">Student ID:</label>
+            <input type="text" id="studentId" name="studentId" required>
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>

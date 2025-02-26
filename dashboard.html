@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            loadSavedData();
+        });
+
+        function addTransaction(event) {
+            event.preventDefault();
+            const bookTitle = document.getElementById("new-transaction-book").value;
+            const dueDate = document.getElementById("new-transaction-due").value;
+            if (bookTitle && dueDate) {
+                const newTransaction = `Book: "${bookTitle}" - Due Date: ${dueDate}`;
+                addToList("recent-transactions-list", newTransaction);
+                saveData(); 
+            }
+        }
+
+        function updateFines() {
+            const fines = parseFloat(document.getElementById("fines-input").value) || 0;
+            document.getElementById("fines-total").textContent = fines.toFixed(2);
+            saveData(); // Save data to local storage
+        }
+
+        function searchBook(event) {
+            event.preventDefault();
+            const isbn = document.getElementById("isbn").value;
+            document.getElementById("book-result").textContent = `Searching for book with ISBN: ${isbn}`;
+        }
+
+        function addNewBook(event) {
+            event.preventDefault();
+            const bookTitle = document.getElementById("new-book-title").value;
+            const author = document.getElementById("new-book-author").value;
+            if (bookTitle && author) {
+                const newBook = `Book: "${bookTitle}" by ${author}`;
+                addToList("new-books-list", newBook);
+                saveData(); 
+            }
+        }
+
+        function addToList(listId, text) {
+            const list = document.getElementById(listId);
+            const listItem = document.createElement("li");
+            listItem.textContent = text;
+            list.appendChild(listItem);
+        }
+
+        function saveData() {
+            const studentId = document.getElementById("student-id").value;
+            const fines = document.getElementById("fines-input").value;
+            const transactions = Array.from(document.getElementById("recent-transactions-list").children).map(li => li.textContent);
+            const books = Array.from(document.getElementById("new-books-list").children).map(li => li.textContent);
+
+            const dashboardData = {
+                studentId,
+                fines,
+                transactions,
+                books
+            };
+
+            localStorage.setItem("libraryDashboard", JSON.stringify(dashboardData));
+            alert("Data saved successfully!");
+        }
+
+        function loadSavedData() {
+            const savedData = localStorage.getItem("libraryDashboard");
+            if (savedData) {
+                const data = JSON.parse(savedData);
+
+                document.getElementById("student-id").value = data.studentId;
+                document.getElementById("fines-input").value = data.fines;
+                document.getElementById("fines-total").textContent = parseFloat(data.fines || 0).toFixed(2);
+
+                populateList("recent-transactions-list", data.transactions);
+                populateList("new-books-list", data.books);
+            }
+        }
+
+     
+        function populateList(listId, items) {
+            const list = document.getElementById(listId);
+            list.innerHTML = "";
+            items.forEach(item => addToList(listId, item));
+        }
+    </script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Welcome to the Library Dashboard</h1>
+
+       
+        <div class="student-info">
+            <h3>Student ID:</h3>
+            <input type="text" id="student-id" value="12345">
+        </div>
+
+      
+        <div class="book-search">
+            <h3>Search Book by ISBN</h3>
+            <form onsubmit="searchBook(event)">
+                <label for="isbn">ISBN:</label>
+                <input type="text" id="isbn" name="isbn" placeholder="Enter ISBN" required>
+                <button type="submit">Search</button>
+            </form>
+            <p id="book-result">Book Information will appear here.</p>
+        </div>
+
+  
+        <div class="book-availability">
+            <h3>Book Availability</h3>
+            <p>Available Books: <span>15</span></p>
+        </div>
+
+        
+        <div class="fines">
+            <h3>Total Fines</h3>
+            <input type="number" id="fines-input" placeholder="Enter Fines" onchange="updateFines()">
+            <p>Total Fines: ₹<span id="fines-total">5.00</span></p>
+        </div>
+
+     
+        <div class="recent-transactions">
+            <h3>Recent Transactions</h3>
+            <ul id="recent-transactions-list"></ul>
+
+            <h4>Add a New Transaction</h4>
+            <form onsubmit="addTransaction(event)">
+                <label for="new-transaction-book">Book Title:</label>
+                <input type="text" id="new-transaction-book" placeholder="Enter Book Title" required>
+                <label for="new-transaction-due">Due Date:</label>
+                <input type="date" id="new-transaction-due" required>
+                <button type="submit">Add Transaction</button>
+            </form>
+        </div>
+
+       
+        <div class="new-books">
+            <h3>Newly Added Books</h3>
+            <ul id="new-books-list"></ul>
+
+            <h4>Add a New Book</h4>
+            <form onsubmit="addNewBook(event)">
+                <label for="new-book-title">Book Title:</label>
+                <input type="text" id="new-book-title" placeholder="Enter Book Title" required>
+                <label for="new-book-author">Author:</label>
+                <input type="text" id="new-book-author" placeholder="Enter Author" required>
+                <button type="submit">Add Book</button>
+            </form>
+        </div>
+
+       
+        <button onclick="saveData()">Save Data</button>
+    </div>
+</body>
+</html>
